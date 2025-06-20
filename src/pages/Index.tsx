@@ -295,12 +295,12 @@ const MainContent = () => {
         </div>
 
         {/* Problem Statement */}
-        <Card className="bg-gradient-to-r from-red-50 to-pink-50 dark:from-red-900/20 dark:to-pink-900/20 border-2 border-red-200 dark:border-red-700 shadow-xl animate-fade-in">
+        <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border-2 border-blue-200 dark:border-blue-700 shadow-xl animate-fade-in">
           <CardHeader>
-            <CardTitle className="text-2xl sm:text-3xl text-red-800 dark:text-red-300 font-serif">Problem Statement</CardTitle>
+            <CardTitle className="text-2xl sm:text-3xl text-blue-800 dark:text-blue-300 font-serif">Problem Statement</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-red-700 dark:text-red-300 text-base sm:text-lg leading-relaxed">
+            <p className="text-blue-700 dark:text-blue-300 text-base sm:text-lg leading-relaxed">
               In rural India, citizens struggle to access government services due to language barriers, 
               digital illiteracy, and complex processes. Most e-governance portals are not designed for 
               low-literacy users or regional language speakers, resulting in underutilization of essential 
