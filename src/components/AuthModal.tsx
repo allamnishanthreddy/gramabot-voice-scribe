@@ -1,5 +1,6 @@
 
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -17,6 +18,7 @@ interface AuthModalProps {
 }
 
 const AuthModal = ({ open, onClose, defaultTab = 'login' }: AuthModalProps) => {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState(defaultTab);
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -86,6 +88,7 @@ const AuthModal = ({ open, onClose, defaultTab = 'login' }: AuthModalProps) => {
       if (result.success) {
         toast.success("Registration successful! You are now logged in.");
         handleClose();
+        navigate('/'); // Redirect to landing page after successful registration
       } else {
         toast.error(result.error || "Registration failed");
       }
