@@ -3,6 +3,8 @@ import React, { useState, useRef } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Camera, Upload, X, FileImage, Loader2 } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 interface ImageUploadProps {
   onImageProcessed: (text: string) => void;
@@ -16,55 +18,7 @@ const ImageUpload = ({ onImageProcessed, onClose }: ImageUploadProps) => {
   const [error, setError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const cameraInputRef = useRef<HTMLInputElement>(null);
-
-  const extractTextFromImage = async (file: File): Promise<string> => {
-    return new Promise((resolve, reject) => {
-      const canvas = document.createElement('canvas');
-      const ctx = canvas.getContext('2d');
-      const img = new Image();
-      
-      img.onload = () => {
-        canvas.width = img.width;
-        canvas.height = img.height;
-        ctx?.drawImage(img, 0, 0);
-        
-        // Get image data for analysis
-        const imageData = ctx?.getImageData(0, 0, canvas.width, canvas.height);
-        
-        if (!imageData) {
-          reject(new Error('Could not process image data'));
-          return;
-        }
-
-        // Simple text detection based on image characteristics
-        // This is a basic implementation - for production, use Tesseract.js or similar
-        const { data, width, height } = imageData;
-        let textRegions = [];
-        
-        // Look for text-like regions (high contrast areas)
-        for (let y = 0; y < height; y += 10) {
-          for (let x = 0; x < width; x += 10) {
-            const i = (y * width + x) * 4;
-            const brightness = (data[i] + data[i + 1] + data[i + 2]) / 3;
-            
-            if (brightness > 200 || brightness < 50) {
-              textRegions.push({ x, y, brightness });
-            }
-          }
-        }
-        
-        if (textRegions.length > 0) {
-          // Mock extracted text based on actual image analysis
-          resolve(`Extracted text from uploaded image:\n[Text content would appear here based on OCR processing]\nImage dimensions: ${width}x${height}\nText regions detected: ${textRegions.length}`);
-        } else {
-          resolve('No clear text detected in the image. Please try with a clearer image or better lighting.');
-        }
-      };
-      
-      img.onerror = () => reject(new Error('Failed to load image'));
-      img.src = URL.createObjectURL(file);
-    });
-  };
+  const { toast } = useToast();
 
   const processImageToText = async (file: File) => {
     if (!file) return;
@@ -82,18 +36,49 @@ const ImageUpload = ({ onImageProcessed, onClose }: ImageUploadProps) => {
       if (file.size > 5 * 1024 * 1024) {
         throw new Error('Image size should be less than 5MB');
       }
+
+      // Get current session
+      const { data: { session } } = await supabase.auth.getSession();
       
-      // Extract text from the selected image only
-      const extractedText = await extractTextFromImage(file);
-      
-      if (!extractedText.trim()) {
-        throw new Error('No text found in the image. Please try with a clearer image.');
+      if (!session) {
+        throw new Error('Please log in to extract text from images');
       }
+
+      // Create form data
+      const formData = new FormData();
+      formData.append('image', file);
+
+      // Call the edge function
+      const { data, error } = await supabase.functions.invoke('extract-text', {
+        body: formData,
+        headers: {
+          'Authorization': `Bearer ${session.access_token}`
+        }
+      });
+
+      if (error) {
+        throw new Error(error.message || 'Failed to process image');
+      }
+
+      if (!data.success) {
+        throw new Error(data.error || 'Failed to extract text');
+      }
+
+      toast({
+        title: "Success!",
+        description: "Text extracted and saved to your history",
+      });
       
-      onImageProcessed(extractedText);
+      onImageProcessed(data.extractedText);
       onClose();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to process image');
+      const errorMessage = err instanceof Error ? err.message : 'Failed to process image';
+      setError(errorMessage);
+      toast({
+        title: "Error",
+        description: errorMessage,
+        variant: "destructive",
+      });
     } finally {
       setIsProcessing(false);
     }

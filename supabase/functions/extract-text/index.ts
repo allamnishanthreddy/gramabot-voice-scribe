@@ -1,4 +1,6 @@
+
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -11,6 +13,30 @@ serve(async (req) => {
   }
 
   try {
+    // Initialize Supabase client
+    const supabaseUrl = Deno.env.get('SUPABASE_URL')!
+    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
+    const supabase = createClient(supabaseUrl, supabaseKey)
+
+    // Get user from auth header
+    const authHeader = req.headers.get('Authorization')
+    if (!authHeader) {
+      return new Response(
+        JSON.stringify({ error: 'Authorization required' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
+    }
+
+    const token = authHeader.replace('Bearer ', '')
+    const { data: { user }, error: userError } = await supabase.auth.getUser(token)
+    
+    if (userError || !user) {
+      return new Response(
+        JSON.stringify({ error: 'Invalid authorization' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
+    }
+
     const formData = await req.formData()
     const imageFile = formData.get('image') as File
     
@@ -21,17 +47,20 @@ serve(async (req) => {
       )
     }
 
-    // Convert image to base64 for processing
-    const arrayBuffer = await imageFile.arrayBuffer()
-    const base64Image = btoa(String.fromCharCode(...new Uint8Array(arrayBuffer)))
-    
-    // For now, we'll use a simple text extraction simulation
-    // In production, you would integrate with services like:
-    // - Google Vision API
-    // - Azure Computer Vision
-    // - AWS Textract
-    // - Tesseract.js
-    
+    // Upload image to storage
+    const fileName = `${user.id}/${Date.now()}-${imageFile.name}`
+    const { error: uploadError } = await supabase.storage
+      .from('document-images')
+      .upload(fileName, imageFile)
+
+    if (uploadError) {
+      console.error('Upload error:', uploadError)
+      return new Response(
+        JSON.stringify({ error: 'Failed to upload image' }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
+    }
+
     // Simulate OCR processing delay
     await new Promise(resolve => setTimeout(resolve, 2000))
     
@@ -49,12 +78,33 @@ Processing completed at: ${new Date().toLocaleString()}
 
 Note: This is a backend-processed result from Supabase Edge Function.`
 
+    // Save extraction to database
+    const { data: extraction, error: dbError } = await supabase
+      .from('image_extractions')
+      .insert({
+        user_id: user.id,
+        file_name: imageFile.name,
+        file_size: imageFile.size,
+        extracted_text: mockExtractedText
+      })
+      .select()
+      .single()
+
+    if (dbError) {
+      console.error('Database error:', dbError)
+      return new Response(
+        JSON.stringify({ error: 'Failed to save extraction' }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
+    }
+
     return new Response(
       JSON.stringify({ 
         success: true, 
         extractedText: mockExtractedText,
         fileName: imageFile.name,
-        fileSize: imageFile.size
+        fileSize: imageFile.size,
+        extractionId: extraction.id
       }),
       { 
         headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
