@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -7,15 +7,15 @@ import { TrendingUp, Users, MessageSquare, Clock, CheckCircle, AlertTriangle, Ba
 
 const AdminDashboard = () => {
   const [selectedTimeRange, setSelectedTimeRange] = useState('7d');
-
-  const metrics = [
+  const [metrics, setMetrics] = useState([
     {
       title: "Total Users",
       value: "25,847",
       change: "+12%",
       changeType: "positive",
       icon: Users,
-      color: "blue"
+      color: "blue",
+      baseValue: 25847
     },
     {
       title: "Active Conversations",
@@ -23,7 +23,8 @@ const AdminDashboard = () => {
       change: "+8%",
       changeType: "positive",
       icon: MessageSquare,
-      color: "green"
+      color: "green",
+      baseValue: 1234
     },
     {
       title: "Avg Response Time",
@@ -31,7 +32,8 @@ const AdminDashboard = () => {
       change: "-15%",
       changeType: "positive",
       icon: Clock,
-      color: "orange"
+      color: "orange",
+      baseValue: 2.3
     },
     {
       title: "Success Rate",
@@ -39,9 +41,56 @@ const AdminDashboard = () => {
       change: "+2%",
       changeType: "positive",
       icon: CheckCircle,
-      color: "emerald"
+      color: "emerald",
+      baseValue: 94.5
     }
-  ];
+  ]);
+
+  // Simulate dynamic data updates
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setMetrics(prevMetrics => 
+        prevMetrics.map(metric => {
+          const randomChange = (Math.random() - 0.5) * 0.1; // -5% to +5% change
+          let newValue = metric.baseValue;
+          let newValueString = '';
+          let newChange = '';
+
+          switch (metric.title) {
+            case "Total Users":
+              newValue = Math.floor(metric.baseValue + (Math.random() * 100 - 50));
+              newValueString = newValue.toLocaleString();
+              newChange = newValue > metric.baseValue ? `+${((newValue - metric.baseValue) / metric.baseValue * 100).toFixed(1)}%` : `${((newValue - metric.baseValue) / metric.baseValue * 100).toFixed(1)}%`;
+              break;
+            case "Active Conversations":
+              newValue = Math.floor(metric.baseValue + (Math.random() * 50 - 25));
+              newValueString = newValue.toLocaleString();
+              newChange = newValue > metric.baseValue ? `+${((newValue - metric.baseValue) / metric.baseValue * 100).toFixed(1)}%` : `${((newValue - metric.baseValue) / metric.baseValue * 100).toFixed(1)}%`;
+              break;
+            case "Avg Response Time":
+              newValue = parseFloat((metric.baseValue + randomChange).toFixed(1));
+              newValueString = `${newValue} min`;
+              newChange = newValue < metric.baseValue ? `+${(((metric.baseValue - newValue) / metric.baseValue) * 100).toFixed(1)}%` : `-${(((newValue - metric.baseValue) / metric.baseValue) * 100).toFixed(1)}%`;
+              break;
+            case "Success Rate":
+              newValue = parseFloat((metric.baseValue + randomChange).toFixed(1));
+              newValueString = `${newValue}%`;
+              newChange = newValue > metric.baseValue ? `+${((newValue - metric.baseValue) / metric.baseValue * 100).toFixed(1)}%` : `${((newValue - metric.baseValue) / metric.baseValue * 100).toFixed(1)}%`;
+              break;
+          }
+
+          return {
+            ...metric,
+            value: newValueString,
+            change: newChange,
+            changeType: newChange.startsWith('+') || (metric.title === "Avg Response Time" && newChange.startsWith('-')) ? "positive" : "negative"
+          };
+        })
+      );
+    }, 5000); // Update every 5 seconds
+
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <div className="max-w-7xl mx-auto space-y-6">
@@ -53,7 +102,7 @@ const AdminDashboard = () => {
             <span>Admin Analytics Dashboard</span>
           </CardTitle>
           <p className="text-gray-300 text-center text-lg">
-            Monitor GramaBot performance and user engagement metrics
+            Monitor GramaBot performance and user engagement metrics (Live Updates)
           </p>
         </CardHeader>
       </Card>
@@ -113,11 +162,9 @@ const AdminDashboard = () => {
           <CardContent>
             <div className="space-y-4">
               {[
-                { language: 'Hindi', percentage: 45, users: '11,631' },
-                { language: 'Telugu', percentage: 25, users: '6,461' },
-                { language: 'English', percentage: 15, users: '3,877' },
-                { language: 'Kannada', percentage: 10, users: '2,584' },
-                { language: 'Tamil', percentage: 5, users: '1,292' }
+                { language: 'Telugu', percentage: 45, users: '11,631' },
+                { language: 'Hindi', percentage: 30, users: '7,754' },
+                { language: 'English', percentage: 25, users: '6,461' }
               ].map((lang, index) => (
                 <div key={index} className="flex items-center justify-between">
                   <span className="text-sm font-medium">{lang.language}</span>
@@ -138,7 +185,7 @@ const AdminDashboard = () => {
 
         <Card>
           <CardHeader>
-            <CardTitle>Service Category Performance</CardTitle>
+            <CardTitle>Service Category Performance (Telangana Focus)</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
@@ -146,8 +193,8 @@ const AdminDashboard = () => {
                 { service: 'Pension Services', queries: 8547, satisfaction: 95 },
                 { service: 'Ration Card', queries: 6234, satisfaction: 92 },
                 { service: 'Health Schemes', queries: 4156, satisfaction: 88 },
-                { service: 'Education', queries: 2987, satisfaction: 91 },
-                { service: 'Land Records', queries: 1876, satisfaction: 85 }
+                { service: 'Education Scholarships', queries: 2987, satisfaction: 91 },
+                { service: 'Land Records (Dharani)', queries: 1876, satisfaction: 85 }
               ].map((service, index) => (
                 <div key={index} className="space-y-2">
                   <div className="flex justify-between">
@@ -183,22 +230,22 @@ const AdminDashboard = () => {
             <div className="flex items-center space-x-3 p-3 bg-green-50 dark:bg-green-900/20 rounded-lg">
               <CheckCircle className="w-5 h-5 text-green-600" />
               <div>
-                <p className="text-sm font-medium">WhatsApp API</p>
+                <p className="text-sm font-medium">Voice Recognition</p>
                 <p className="text-xs text-gray-600 dark:text-gray-400">Operational</p>
               </div>
             </div>
             <div className="flex items-center space-x-3 p-3 bg-green-50 dark:bg-green-900/20 rounded-lg">
               <CheckCircle className="w-5 h-5 text-green-600" />
               <div>
-                <p className="text-sm font-medium">Voice Services</p>
+                <p className="text-sm font-medium">Translation Services</p>
                 <p className="text-xs text-gray-600 dark:text-gray-400">Operational</p>
               </div>
             </div>
-            <div className="flex items-center space-x-3 p-3 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg">
-              <AlertTriangle className="w-5 h-5 text-yellow-600" />
+            <div className="flex items-center space-x-3 p-3 bg-green-50 dark:bg-green-900/20 rounded-lg">
+              <CheckCircle className="w-5 h-5 text-green-600" />
               <div>
-                <p className="text-sm font-medium">Translation API</p>
-                <p className="text-xs text-gray-600 dark:text-gray-400">Degraded</p>
+                <p className="text-sm font-medium">Database Services</p>
+                <p className="text-xs text-gray-600 dark:text-gray-400">Operational</p>
               </div>
             </div>
           </div>

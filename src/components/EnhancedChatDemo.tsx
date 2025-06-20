@@ -31,55 +31,111 @@ const EnhancedChatDemo = () => {
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
+  // Service-specific responses
+  const serviceResponses = {
+    'pension-inquiry': {
+      English: "Hello! I'm here to help you with your pension inquiry. Your pension application (ID: PEN2024001234) has been approved! ₹5,000 will be credited to your account on the 1st of every month. You can collect your pension card from the nearest post office in Hyderabad.",
+      Hindi: "नमस्ते! मैं आपकी पेंशन की जांच में आपकी सहायता के लिए यहाँ हूँ। आपका पेंशन आवेदन (ID: PEN2024001234) स्वीकृत हो गया है! हर महीने की 1 तारीख को आपके खाते में ₹5,000 जमा होंगे।",
+      Telugu: "నమస్కారం! మీ పెన్షన్ విచారణలో మీకు సహాయం చేయడానికి నేను ఇక్కడ ఉన్నాను। మీ పెన్షన్ దరఖాస్తు (ID: PEN2024001234) ఆమోదించబడింది! ప్రతి నెల 1వ తేదీన మీ ఖాతాలో ₹5,000 జమ అవుతుంది।"
+    },
+    'ration-card': {
+      English: "Hello! I can help you with your ration card application. To apply for a new ration card, you'll need: 1) Aadhaar card 2) Address proof 3) Income certificate 4) Family photographs. The process takes 15-20 working days.",
+      Hindi: "नमस्ते! मैं आपके राशन कार्ड आवेदन में आपकी सहायता कर सकता हूँ। नए राशन कार्ड के लिए आवेदन करने के लिए आपको चाहिए: 1) आधार कार्ड 2) पता प्रमाण 3) आय प्रमाणपत्र 4) पारिवारिक तस्वीरें।",
+      Telugu: "నమస్కారం! మీ రేషన్ కార్డ్ దరఖాస్తులో నేను మీకు సహాయం చేయగలను. కొత్త రేషన్ కార్డ్ కోసం దరఖాస్తు చేయడానికి మీకు అవసరం: 1) ఆధార్ కార్డ్ 2) చిరునామా రుజువు 3) ఆదాయ ధృవీకరణ పత్రం 4) కుటుంబ ఫోటోలు।"
+    },
+    'health-scheme': {
+      English: "Hello! I'm here to help you with health scheme registration. You can register for Ayushman Bharat and state health insurance schemes. Required documents: Aadhaar card, ration card, and income certificate.",
+      Hindi: "नमस्ते! मैं स्वास्थ्य योजना पंजीकरण में आपकी सहायता के लिए यहाँ हूँ। आप आयुष्मान भारत और राज्य स्वास्थ्य बीमा योजनाओं के लिए पंजीकरण कर सकते हैं।",
+      Telugu: "నమస్కారం! ఆరోగ్య పథకం నమోదులో నేను మీకు సహాయం చేయడానికి ఇక్కడ ఉన్నాను। మీరు ఆయుష్మాన్ భారత్ మరియు రాష్ట్ర ఆరోగ్య బీమా పథకాలకు నమోదు చేసుకోవచ్చు।"
+    },
+    'land-records': {
+      English: "Hello! I can help you verify your land records and property documents. Please provide your survey number and village details for verification.",
+      Hindi: "नमस्ते! मैं आपके भूमि रिकॉर्ड और संपत्ति दस्तावेजों को सत्यापित करने में आपकी सहायता कर सकता हूँ।",
+      Telugu: "నమస్కారం! మీ భూమి రికార్డులు మరియు ఆస్తి పత్రాలను ధృవీకరించడంలో నేను మీకు సహాయం చేయగలను।"
+    },
+    'scholarship': {
+      English: "Hello! I'm here to help you with scholarship applications. Available scholarships include pre-matric, post-matric, and merit-based scholarships for students from Telangana.",
+      Hindi: "नमस्ते! मैं छात्रवृत्ति आवेदनों में आपकी सहायता के लिए यहाँ हूँ।",
+      Telugu: "నమస్కారం! స్కాలర్‌షిప్ దరఖాస్తులలో నేను మీకు సహాయం చేయడానికి ఇక్కడ ఉన్నాను।"
+    },
+    'complaint': {
+      English: "Hello! I can help you file complaints against government services. Please describe your issue and I'll guide you through the complaint process.",
+      Hindi: "नमस्ते! मैं सरकारी सेवाओं के खिलाफ शिकायत दर्ज करने में आपकी सहायता कर सकता हूँ।",
+      Telugu: "నమస్కారం! ప్రభుత్వ సేవలకు వ్యతిరేకంగా ఫిర్యాదులు దాఖలు చేయడంలో నేను మీకు సహాయం చేయగలను।"
+    }
+  };
+
   const predefinedQueries = {
     English: [
       {
         query: "Check pension status",
-        response: "Your pension application (ID: PEN2024001234) has been approved! ₹5,000 will be credited to your account on the 1st of every month. You can collect your pension card from the nearest post office.",
-        translation: t('chat.pensionResponse')
+        response: serviceResponses['pension-inquiry']['English']
       },
       {
         query: "Apply for ration card",
-        response: "To apply for a ration card, you'll need: 1) Aadhaar card 2) Address proof (electricity bill/rent agreement) 3) Income certificate 4) Family photographs. The process takes 15-20 working days.",
-        translation: t('chat.rationResponse')
+        response: serviceResponses['ration-card']['English']
+      },
+      {
+        query: "Health scheme registration",
+        response: serviceResponses['health-scheme']['English']
       }
     ],
     Hindi: [
       {
-        query: t('chat.pensionCheck'),
-        response: t('chat.pensionResponse'),
-        translation: "Your pension application has been approved!"
+        query: "पेंशन की स्थिति जांचें",
+        response: serviceResponses['pension-inquiry']['Hindi']
       },
       {
-        query: t('chat.rationCard'),
-        response: t('chat.rationResponse'),
-        translation: "I can help you with the ration card application process."
+        query: "राशन कार्ड के लिए आवेदन करें",
+        response: serviceResponses['ration-card']['Hindi']
       }
     ],
     Telugu: [
       {
-        query: t('chat.pensionCheck'),
-        response: t('chat.pensionResponse'),
-        translation: "Your pension application has been approved!"
+        query: "పెన్షన్ స్థితిని తనిఖీ చేయండి",
+        response: serviceResponses['pension-inquiry']['Telugu']
       },
       {
-        query: t('chat.rationCard'),
-        response: t('chat.rationResponse'),
-        translation: "I can help you with the ration card application process."
+        query: "రేషన్ కార్డ్ కోసం దరఖాస్తు చేయండి",
+        response: serviceResponses['ration-card']['Telugu']
       }
     ]
   };
 
-  // Auto-greeting when component mounts
+  // Auto-greeting when component mounts or service context changes
   useEffect(() => {
+    const serviceContext = localStorage.getItem('chatbot-context');
+    const serviceName = localStorage.getItem('chatbot-service');
+    
+    let greetingText = '';
+    
+    if (serviceContext && serviceResponses[serviceContext as keyof typeof serviceResponses]) {
+      // Service-specific greeting
+      greetingText = serviceResponses[serviceContext as keyof typeof serviceResponses][currentLanguage as keyof typeof serviceResponses['pension-inquiry']];
+    } else {
+      // Default greeting
+      const greetings = {
+        English: "Hello! I'm GramaBot, your AI assistant for government services. How can I help you today?",
+        Hindi: "नमस्ते! मैं ग्रामाबॉट हूँ, सरकारी सेवाओं के लिए आपका AI सहायक। आज मैं आपकी कैसे सहायता कर सकता हूँ?",
+        Telugu: "నమస్కారం! నేను గ్రామాబాట్, ప్రభుత్వ సేవల కోసం మీ AI సహాయకుడను। ఈరోజు నేను మీకు ఎలా సహాయం చేయగలను?"
+      };
+      greetingText = greetings[currentLanguage as keyof typeof greetings];
+    }
+
     const greeting: Message = {
       id: `bot-greeting-${Date.now()}`,
-      text: t('chat.greeting'),
+      text: greetingText,
       type: 'bot',
       timestamp: new Date()
     };
     setMessages([greeting]);
-  }, [currentLanguage, t]);
+
+    // Clear service context after using it
+    if (serviceContext) {
+      localStorage.removeItem('chatbot-context');
+      localStorage.removeItem('chatbot-service');
+    }
+  }, [currentLanguage]);
 
   useEffect(() => {
     scrollToBottom();
@@ -105,14 +161,22 @@ const EnhancedChatDemo = () => {
     setIsTyping(true);
 
     setTimeout(() => {
-      const botResponse = response || `${t('chat.greeting')} I understand you're asking about: "${messageText}". Let me help you with the relevant government service information.`;
+      let botResponse = response;
+      
+      if (!botResponse) {
+        const greetings = {
+          English: "Thank you for your question. Let me help you with that government service information.",
+          Hindi: "आपके प्रश्न के लिए धन्यवाद। मैं उस सरकारी सेवा की जानकारी के साथ आपकी सहायता करता हूँ।",
+          Telugu: "మీ ప్రశ్నకు ధన్యవాదాలు. ఆ ప్రభుత్వ సేవా సమాచారంతో నేను మీకు సహాయం చేస్తాను।"
+        };
+        botResponse = greetings[currentLanguage as keyof typeof greetings];
+      }
       
       const botMessage: Message = {
         id: `bot-${Date.now()}`,
         text: botResponse,
         type: 'bot',
-        timestamp: new Date(),
-        translation: currentLanguage !== 'English' ? 'Response in your selected language' : undefined
+        timestamp: new Date()
       };
 
       setMessages(prev => [...prev, botMessage]);
@@ -128,16 +192,22 @@ const EnhancedChatDemo = () => {
     if ('webkitSpeechRecognition' in window) {
       const recognition = new (window as any).webkitSpeechRecognition();
       recognition.lang = currentLanguage === 'Hindi' ? 'hi-IN' : currentLanguage === 'Telugu' ? 'te-IN' : 'en-US';
+      recognition.continuous = false;
+      recognition.interimResults = false;
+      
       recognition.onstart = () => setIsListening(true);
       recognition.onresult = (event: any) => {
         const transcript = event.results[0][0].transcript;
         setInputText(transcript);
-        // Auto-send the voice input
         setTimeout(() => {
           handleSendMessage(transcript);
         }, 500);
       };
       recognition.onend = () => setIsListening(false);
+      recognition.onerror = (event: any) => {
+        console.error('Speech recognition error:', event.error);
+        setIsListening(false);
+      };
       recognition.start();
     }
   };

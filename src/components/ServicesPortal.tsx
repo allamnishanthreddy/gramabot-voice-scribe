@@ -121,10 +121,15 @@ const ServicesPortal = ({ onStartChat }: ServicesPortalProps) => {
   };
 
   const handleStartChat = (service: any) => {
+    console.log('Starting chat for service:', service.name);
     // Store the service context for the chatbot
     localStorage.setItem('chatbot-context', service.chatContext);
     localStorage.setItem('chatbot-service', service.name);
-    onStartChat?.(service.chatContext);
+    
+    // Call the callback to switch to demo tab
+    if (onStartChat) {
+      onStartChat(service.chatContext);
+    }
   };
 
   return (
