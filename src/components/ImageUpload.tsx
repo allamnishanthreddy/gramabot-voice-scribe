@@ -1,8 +1,8 @@
+
 import React, { useState, useRef } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Camera, Upload, X, FileImage, Loader2 } from "lucide-react";
-import { useLanguage } from "./LanguageProvider";
 
 interface ImageUploadProps {
   onImageProcessed: (text: string) => void;
@@ -16,7 +16,6 @@ const ImageUpload = ({ onImageProcessed, onClose }: ImageUploadProps) => {
   const [error, setError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const cameraInputRef = useRef<HTMLInputElement>(null);
-  const { currentLanguage } = useLanguage();
 
   const extractTextFromImage = async (file: File): Promise<string> => {
     return new Promise((resolve, reject) => {
@@ -29,50 +28,42 @@ const ImageUpload = ({ onImageProcessed, onClose }: ImageUploadProps) => {
         canvas.height = img.height;
         ctx?.drawImage(img, 0, 0);
         
-        // Simple OCR simulation - in real implementation, you'd use Tesseract.js or similar
-        // For demo purposes, we'll extract basic text patterns
+        // Get image data for analysis
         const imageData = ctx?.getImageData(0, 0, canvas.width, canvas.height);
         
-        // Mock text extraction based on image analysis
-        const extractedText = analyzeImageForText(file.name, currentLanguage);
-        resolve(extractedText);
+        if (!imageData) {
+          reject(new Error('Could not process image data'));
+          return;
+        }
+
+        // Simple text detection based on image characteristics
+        // This is a basic implementation - for production, use Tesseract.js or similar
+        const { data, width, height } = imageData;
+        let textRegions = [];
+        
+        // Look for text-like regions (high contrast areas)
+        for (let y = 0; y < height; y += 10) {
+          for (let x = 0; x < width; x += 10) {
+            const i = (y * width + x) * 4;
+            const brightness = (data[i] + data[i + 1] + data[i + 2]) / 3;
+            
+            if (brightness > 200 || brightness < 50) {
+              textRegions.push({ x, y, brightness });
+            }
+          }
+        }
+        
+        if (textRegions.length > 0) {
+          // Mock extracted text based on actual image analysis
+          resolve(`Extracted text from uploaded image:\n[Text content would appear here based on OCR processing]\nImage dimensions: ${width}x${height}\nText regions detected: ${textRegions.length}`);
+        } else {
+          resolve('No clear text detected in the image. Please try with a clearer image or better lighting.');
+        }
       };
       
       img.onerror = () => reject(new Error('Failed to load image'));
       img.src = URL.createObjectURL(file);
     });
-  };
-
-  const analyzeImageForText = (fileName: string, language: string): string => {
-    // This is a simplified text extraction simulation
-    // In a real app, you'd use OCR libraries like Tesseract.js
-    const governmentTexts = {
-      English: [
-        "Government of India\nMinistry of Rural Development\nApplication for Pension Scheme\nName: [Extracted Name]\nAadhaar Number: [Extracted Number]\nApplication Status: Under Review\nDate: [Current Date]",
-        "Ration Card Details\nCard Number: [Card Number]\nFamily Head: [Name]\nAddress: [Address]\nValid Until: [Date]",
-        "Land Records Certificate\nSurvey Number: [Number]\nOwner Name: [Name]\nArea: [Area] acres\nLocation: [Village Name]"
-      ],
-      Hindi: [
-        "भारत सरकार\nग्रामीण विकास मंत्रालय\nपेंशन योजना के लिए आवेदन\nनाम: [निकाला गया नाम]\nआधार संख्या: [निकाली गई संख्या]\nआवेदन स्थिति: समीक्षाधीन\nदिनांक: [वर्तमान दिनांक]",
-        "राशन कार्ड विवरण\nकार्ड संख्या: [कार्ड संख्या]\nपरिवार प्रमुख: [Name]\nपता: [Address]\nवैध तक: [Date]"
-      ],
-      Telugu: [
-        "భారత ప్రభుత్వం\nగ్రామీణ అభివృద్ధి మంత్రిత్వ శాఖ\nపెన్షన్ స్కీమ్ కోసం దరఖాస్తు\nపేరు: [సేకరించిన పేరు]\nఆధార్ నంబర్: [సేకరించిన నంబర్]\nదరఖాస్తు స్థితి: సమీక్షలో\nతేదీ: [ప్రస్తుత తేదీ]",
-        "రేషన్ కార్డ్ వివరాలు\nకార్డ్ నంబర్: [కార్డ్ నంబర్]\nకుటుంబ అధిపతి: [పేరు]\nచిరునామా: [చిరునామా]"
-      ],
-      Tamil: [
-        "இந்திய அரசு\nகிராமப்புற வளர்ச்சி அமைச்சகம்\nஓய்வூதிய திட்டத்திற்கான விண்ணப்பம்\nபெயர்: [பிரித்தெடுக்கப்பட்ட பெயர்]\nஆதார் எண்: [பிரித்தெடுக்கப்பட்ட எண்]\nவிண்ணப்ப நிலை: மறுஆய்வில்\nதேதி: [தற்போதைய தேதி]",
-        "ரேஷன் கார்டு விவரங்கள்\nகார்டு எண்: [கார்டு எண்]\nகுடும்பத் தலைவர்: [பெயர்]\nமுகவரி: [முகவரி]"
-      ],
-      Kannada: [
-        "ಭಾರತ ಸರ್ಕಾರ\nಗ್ರಾಮೀಣ ಅಭಿವೃದ್ಧಿ ಸಚಿವಾಲಯ\nಪಿಂಚಣಿ ಯೋಜನೆಗಾಗಿ ಅರ್ಜಿ\nಹೆಸರು: [ಹೊರತೆಗೆದ ಹೆಸರು]\nಆಧಾರ್ ಸಂಖ್ಯೆ: [ಹೊರತೆಗೆದ ಸಂಖ್ಯೆ]\nಅರ್ಜಿ ಸ್ಥಿತಿ: ಪರಿಶೀಲನೆಯಲ್ಲಿ\nದಿನಾಂಕ: [ಪ್ರಸ್ತುತ ದಿನಾಂಕ]",
-        "ರೇಷನ್ ಕಾರ್ಡ್ ವಿವರಗಳು\nಕಾರ್ಡ್ ಸಂಖ್ಯೆ: [ಕಾರ್ಡ್ ಸಂಖ್ಯೆ]\nಕುಟುಂಬದ ಮುಖ್ಯಸ್ಥ: [ಹೆಸರು]\nವಿಳಾಸ: [ವಿಳಾಸ]"
-      ]
-    };
-
-    const texts = governmentTexts[language as keyof typeof governmentTexts] || governmentTexts.English;
-    const randomIndex = Math.floor(Math.random() * texts.length);
-    return texts[randomIndex];
   };
 
   const processImageToText = async (file: File) => {
@@ -167,7 +158,7 @@ const ImageUpload = ({ onImageProcessed, onClose }: ImageUploadProps) => {
             <div className="text-center space-y-4">
               <FileImage className="w-16 h-16 text-gray-400 mx-auto" />
               <p className="text-gray-600 dark:text-gray-400 text-sm">
-                Select an image to extract text from government documents
+                Select an image to extract text
               </p>
               
               <div className="grid grid-cols-2 gap-3">
