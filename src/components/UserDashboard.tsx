@@ -3,10 +3,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { User, FileText, Clock, CheckCircle, AlertCircle, Calendar, Bell, Star, Download } from "lucide-react";
+import { User, FileText, Clock, CheckCircle, AlertCircle, Calendar, Bell, Star, Download, Eye } from "lucide-react";
+import ViewApplicationModal from "./ViewApplicationModal";
 
 const UserDashboard = () => {
   const [selectedFilter, setSelectedFilter] = useState('all');
+  const [selectedApplication, setSelectedApplication] = useState<any>(null);
+  const [showViewModal, setShowViewModal] = useState(false);
 
   const applications = [
     {
@@ -101,6 +104,21 @@ const UserDashboard = () => {
     inProgress: applications.filter(app => app.status === 'in-progress').length,
     pending: applications.filter(app => app.status === 'pending').length,
     rejected: applications.filter(app => app.status === 'rejected').length
+  };
+
+  const handleViewApplication = (application: any) => {
+    setSelectedApplication(application);
+    setShowViewModal(true);
+  };
+
+  const handleDownloadReceipt = (application: any) => {
+    // This will trigger the PDF download directly
+    setSelectedApplication(application);
+    setTimeout(() => {
+      // Trigger the download in the modal component
+      const event = new CustomEvent('downloadPDF', { detail: application });
+      window.dispatchEvent(event);
+    }, 100);
   };
 
   return (
@@ -230,13 +248,27 @@ const UserDashboard = () => {
                 )}
 
                 <div className="flex flex-wrap gap-2 pt-2">
+                  <Button 
+                    size="sm" 
+                    variant="outline" 
+                    className="text-xs"
+                    onClick={() => handleViewApplication(application)}
+                  >
+                    <Eye className="w-3 h-3 mr-1" />
+                    View Details
+                  </Button>
+                  <Button 
+                    size="sm" 
+                    variant="outline" 
+                    className="text-xs"
+                    onClick={() => handleDownloadReceipt(application)}
+                  >
+                    <Download className="w-3 h-3 mr-1" />
+                    Download Receipt
+                  </Button>
                   <Button size="sm" variant="outline" className="text-xs">
                     <Calendar className="w-3 h-3 mr-1" />
                     View Timeline
-                  </Button>
-                  <Button size="sm" variant="outline" className="text-xs">
-                    <Download className="w-3 h-3 mr-1" />
-                    Download Receipt
                   </Button>
                   <Button size="sm" variant="outline" className="text-xs">
                     <Bell className="w-3 h-3 mr-1" />
@@ -281,6 +313,16 @@ const UserDashboard = () => {
           </div>
         </CardContent>
       </Card>
+
+      {/* View Application Modal */}
+      <ViewApplicationModal
+        open={showViewModal}
+        onClose={() => {
+          setShowViewModal(false);
+          setSelectedApplication(null);
+        }}
+        application={selectedApplication}
+      />
     </div>
   );
 };

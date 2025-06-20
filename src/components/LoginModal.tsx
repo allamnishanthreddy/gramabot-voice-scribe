@@ -27,19 +27,27 @@ const LoginModal = ({ open, onClose }: LoginModalProps) => {
     setError('');
     
     try {
-      const success = await login(email, password);
-      if (success) {
-        toast.success("Login successful!");
-        onClose();
-        setEmail('');
-        setPassword('');
+      // Demo authentication - accept demo credentials or any email/password
+      if ((email === 'demo@gramabot.com' && password === 'demo123') || 
+          (email && password && email.includes('@'))) {
+        const success = await login(email, password);
+        if (success) {
+          toast.success("Login successful!");
+          onClose();
+          setEmail('');
+          setPassword('');
+        } else {
+          setError('Login failed. Please try again.');
+          toast.error("Login failed. Please check your credentials.");
+        }
       } else {
-        setError('Invalid email or password');
-        toast.error("Login failed. Please check your credentials.");
+        setError('Please enter valid email and password');
+        toast.error("Invalid credentials. Use demo@gramabot.com / demo123 for demo.");
       }
     } catch (err) {
       setError('Login failed. Please try again.');
       toast.error("An error occurred during login.");
+      console.error('Login error:', err);
     }
     
     setLoading(false);
@@ -49,7 +57,7 @@ const LoginModal = ({ open, onClose }: LoginModalProps) => {
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>{t('nav.login')}</DialogTitle>
+          <DialogTitle className="text-xl font-bold">{t('nav.login')}</DialogTitle>
           <DialogDescription>
             Enter your credentials to access your account
           </DialogDescription>
@@ -70,6 +78,7 @@ const LoginModal = ({ open, onClose }: LoginModalProps) => {
               placeholder="rural.citizen@example.com"
               required
               disabled={loading}
+              className="mt-1"
             />
           </div>
           <div>
@@ -82,12 +91,14 @@ const LoginModal = ({ open, onClose }: LoginModalProps) => {
               placeholder="Enter password"
               required
               disabled={loading}
+              className="mt-1"
             />
           </div>
-          <div className="text-sm text-gray-600">
-            <p>Demo credentials:</p>
+          <div className="text-sm text-gray-600 bg-blue-50 p-3 rounded-md">
+            <p className="font-medium">Demo credentials:</p>
             <p>Email: demo@gramabot.com</p>
             <p>Password: demo123</p>
+            <p className="text-xs mt-1 italic">Or use any valid email format with any password</p>
           </div>
           <Button type="submit" className="w-full" disabled={loading}>
             {loading ? 'Logging in...' : t('nav.login')}

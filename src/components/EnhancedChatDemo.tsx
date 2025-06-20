@@ -27,97 +27,83 @@ const EnhancedChatDemo = () => {
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
   const [showControls, setShowControls] = useState(true);
+  const [speechEnabled, setSpeechEnabled] = useState(true);
   const { currentLanguage, t } = useLanguage();
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const recognitionRef = useRef<any>(null);
 
-  // Service-specific responses
+  // Enhanced service-specific responses with more context
   const serviceResponses = {
     'pension-inquiry': {
-      English: "Hello! I'm here to help you with your pension inquiry. Your pension application (ID: PEN2024001234) has been approved! ₹5,000 will be credited to your account on the 1st of every month. You can collect your pension card from the nearest post office in Hyderabad.",
-      Hindi: "नमस्ते! मैं आपकी पेंशन की जांच में आपकी सहायता के लिए यहाँ हूँ। आपका पेंशन आवेदन (ID: PEN2024001234) स्वीकृत हो गया है! हर महीने की 1 तारीख को आपके खाते में ₹5,000 जमा होंगे।",
-      Telugu: "నమస్కారం! మీ పెన్షన్ విచారణలో మీకు సహాయం చేయడానికి నేను ఇక్కడ ఉన్నాను। మీ పెన్షన్ దరఖాస్తు (ID: PEN2024001234) ఆమోదించబడింది! ప్రతి నెల 1వ తేదీన మీ ఖాతాలో ₹5,000 జమ అవుతుంది।"
+      English: {
+        patterns: ['pension', 'retirement', 'old age', 'senior citizen'],
+        responses: [
+          "Your pension application (ID: PEN2024001234) has been approved! ₹5,000 will be credited to your account on the 1st of every month. You can collect your pension card from the nearest post office.",
+          "To check your pension status, please provide your Aadhaar number. Your current pension amount is ₹5,000 per month.",
+          "For pension-related queries, you can visit the District Collector office or call our helpline at 1800-123-4567."
+        ]
+      },
+      Hindi: {
+        patterns: ['पेंशन', 'सेवानिवृत्ति', 'बुजुर्ग', 'वृद्धावस्था'],
+        responses: [
+          "आपका पेंशन आवेदन (ID: PEN2024001234) स्वीकृत हो गया है! हर महीने की 1 तारीख को आपके खाते में ₹5,000 जमा होंगे।",
+          "पेंशन की स्थिति जांचने के लिए, कृपया अपना आधार नंबर प्रदान करें। आपकी वर्तमान पेंशन राशि ₹5,000 प्रति माह है।",
+          "पेंशन संबंधी प्रश्नों के लिए, आप जिला कलेक्टर कार्यालय जा सकते हैं या हमारी हेल्पलाइन 1800-123-4567 पर कॉल कर सकते हैं।"
+        ]
+      },
+      Telugu: {
+        patterns: ['పెన్షన్', 'పదవీ విరమణ', 'వృద్ధులు', 'సీనియర్'],
+        responses: [
+          "మీ పెన్షన్ దరఖాస్తు (ID: PEN2024001234) ఆమోదించబడింది! ప్రతి నెల 1వ తేదీన మీ ఖాతాలో ₹5,000 జమ అవుతుంది।",
+          "పెన్షన్ స్థితిని తనిఖీ చేయడానికి, దయచేసి మీ ఆధార్ నంబర్ అందించండి। మీ ప్రస్తుత పెన్షన్ మొత్తం నెలకు ₹5,000.",
+          "పెన్షన్ సంబంధిత ప్రశ్నలకు, మీరు జిల్లా కలెక్టర్ కార్యాలయానికి వెళ్లవచ్చు లేదా మా హెల్ప్‌లైన్ 1800-123-4567కు కాల్ చేయవచ్చు।"
+        ]
+      }
     },
     'ration-card': {
-      English: "Hello! I can help you with your ration card application. To apply for a new ration card, you'll need: 1) Aadhaar card 2) Address proof 3) Income certificate 4) Family photographs. The process takes 15-20 working days.",
-      Hindi: "नमस्ते! मैं आपके राशन कार्ड आवेदन में आपकी सहायता कर सकता हूँ। नए राशन कार्ड के लिए आवेदन करने के लिए आपको चाहिए: 1) आधार कार्ड 2) पता प्रमाण 3) आय प्रमाणपत्र 4) पारिवारिक तस्वीरें।",
-      Telugu: "నమస్కారం! మీ రేషన్ కార్డ్ దరఖాస్తులో నేను మీకు సహాయం చేయగలను. కొత్త రేషన్ కార్డ్ కోసం దరఖాస్తు చేయడానికి మీకు అవసరం: 1) ఆధార్ కార్డ్ 2) చిరునామా రుజువు 3) ఆదాయ ధృవీకరణ పత్రం 4) కుటుంబ ఫోటోలు।"
-    },
-    'health-scheme': {
-      English: "Hello! I'm here to help you with health scheme registration. You can register for Ayushman Bharat and state health insurance schemes. Required documents: Aadhaar card, ration card, and income certificate.",
-      Hindi: "नमस्ते! मैं स्वास्थ्य योजना पंजीकरण में आपकी सहायता के लिए यहाँ हूँ। आप आयुष्मान भारत और राज्य स्वास्थ्य बीमा योजनाओं के लिए पंजीकरण कर सकते हैं।",
-      Telugu: "నమస్కారం! ఆరోగ్య పథకం నమోదులో నేను మీకు సహాయం చేయడానికి ఇక్కడ ఉన్నాను। మీరు ఆయుష్మాన్ భారత్ మరియు రాష్ట్ర ఆరోగ్య బీమా పథకాలకు నమోదు చేసుకోవచ్చు।"
-    },
-    'land-records': {
-      English: "Hello! I can help you verify your land records and property documents. Please provide your survey number and village details for verification.",
-      Hindi: "नमस्ते! मैं आपके भूमि रिकॉर्ड और संपत्ति दस्तावेजों को सत्यापित करने में आपकी सहायता कर सकता हूँ।",
-      Telugu: "నమస్కారం! మీ భూమి రికార్డులు మరియు ఆస్తి పత్రాలను ధృవీకరించడంలో నేను మీకు సహాయం చేయగలను।"
-    },
-    'scholarship': {
-      English: "Hello! I'm here to help you with scholarship applications. Available scholarships include pre-matric, post-matric, and merit-based scholarships for students from Telangana.",
-      Hindi: "नमस्ते! मैं छात्रवृत्ति आवेदनों में आपकी सहायता के लिए यहाँ हूँ।",
-      Telugu: "నమస్కారం! స్కాలర్‌షిప్ దరఖాస్తులలో నేను మీకు సహాయం చేయడానికి ఇక్కడ ఉన్నాను।"
-    },
-    'complaint': {
-      English: "Hello! I can help you file complaints against government services. Please describe your issue and I'll guide you through the complaint process.",
-      Hindi: "नमस्ते! मैं सरकारी सेवाओं के खिलाफ शिकायत दर्ज करने में आपकी सहायता कर सकता हूँ।",
-      Telugu: "నమస్కారం! ప్రభుత్వ సేవలకు వ్యతిరేకంగా ఫిర్యాదులు దాఖలు చేయడంలో నేను మీకు సహాయం చేయగలను।"
+      English: {
+        patterns: ['ration', 'food', 'card', 'subsidy', 'grain'],
+        responses: [
+          "To apply for a ration card, you need: Aadhaar card, address proof, income certificate, and family photographs. Processing takes 15-20 working days.",
+          "Your ration card application is under review. You can track status using application number RAT2024005678.",
+          "Ration card benefits include subsidized rice at ₹3/kg, wheat at ₹2/kg, and sugar at ₹13.50/kg."
+        ]
+      },
+      Hindi: {
+        patterns: ['राशन', 'खाद्य', 'कार्ड', 'सब्सिडी', 'अनाज'],
+        responses: [
+          "राशन कार्ड के लिए आवेदन करने के लिए आपको चाहिए: आधार कार्ड, पता प्रमाण, आय प्रमाणपत्र, और पारिवारिक तस्वीरें।",
+          "आपका राशन कार्ड आवेदन समीक्षाधीन है। आप आवेदन संख्या RAT2024005678 का उपयोग करके स्थिति ट्रैक कर सकते हैं।",
+          "राशन कार्ड के लाभों में सब्सिडी वाला चावल ₹3/किग्रा, गेहूं ₹2/किग्रा, और चीनी ₹13.50/किग्रा शामिल हैं।"
+        ]
+      },
+      Telugu: {
+        patterns: ['రేషన్', 'ఆహారం', 'కార్డ్', 'సబ్సిడీ', 'ధాన్యం'],
+        responses: [
+          "రేషన్ కార్డ్ కోసం దరఖాస్తు చేయడానికి మీకు అవసరం: ఆధార్ కార్డ్, చిరునామా రుజువు, ఆదాయ ధృవీకరణ పత్రం, మరియు కుటుంబ ఫోటోలు।",
+          "మీ రేషన్ కార్డ్ దరఖాస్తు సమీక్షలో ఉంది. మీరు దరఖాస్తు నంబర్ RAT2024005678 ఉపయోగించి స్థితిని ట్రాక్ చేయవచ్చు।",
+          "రేషన్ కార్డ్ ప్రయోజనాలలో సబ్సిడీ బియ్యం ₹3/కిలో, గోధుమలు ₹2/కిలో, మరియు చక్కెర ₹13.50/కిలో ఉన్నాయి।"
+        ]
+      }
     }
   };
 
-  const predefinedQueries = {
-    English: [
-      {
-        query: "Check pension status",
-        response: serviceResponses['pension-inquiry']['English']
-      },
-      {
-        query: "Apply for ration card",
-        response: serviceResponses['ration-card']['English']
-      },
-      {
-        query: "Health scheme registration",
-        response: serviceResponses['health-scheme']['English']
-      }
-    ],
-    Hindi: [
-      {
-        query: "पेंशन की स्थिति जांचें",
-        response: serviceResponses['pension-inquiry']['Hindi']
-      },
-      {
-        query: "राशन कार्ड के लिए आवेदन करें",
-        response: serviceResponses['ration-card']['Hindi']
-      }
-    ],
-    Telugu: [
-      {
-        query: "పెన్షన్ స్థితిని తనిఖీ చేయండి",
-        response: serviceResponses['pension-inquiry']['Telugu']
-      },
-      {
-        query: "రేషన్ కార్డ్ కోసం దరఖాస్తు చేయండి",
-        response: serviceResponses['ration-card']['Telugu']
-      }
-    ]
-  };
-
-  // Auto-greeting when component mounts or service context changes
+  // Auto-greeting when component mounts
   useEffect(() => {
     const serviceContext = localStorage.getItem('chatbot-context');
-    const serviceName = localStorage.getItem('chatbot-service');
     
     let greetingText = '';
     
     if (serviceContext && serviceResponses[serviceContext as keyof typeof serviceResponses]) {
-      // Service-specific greeting
-      greetingText = serviceResponses[serviceContext as keyof typeof serviceResponses][currentLanguage as keyof typeof serviceResponses['pension-inquiry']];
+      const service = serviceResponses[serviceContext as keyof typeof serviceResponses];
+      const langService = service[currentLanguage as keyof typeof service];
+      greetingText = langService.responses[0];
     } else {
-      // Default greeting
       const greetings = {
-        English: "Hello! I'm GramaBot, your AI assistant for government services. How can I help you today?",
-        Hindi: "नमस्ते! मैं ग्रामाबॉट हूँ, सरकारी सेवाओं के लिए आपका AI सहायक। आज मैं आपकी कैसे सहायता कर सकता हूँ?",
-        Telugu: "నమస్కారం! నేను గ్రామాబాట్, ప్రభుత్వ సేవల కోసం మీ AI సహాయకుడను। ఈరోజు నేను మీకు ఎలా సహాయం చేయగలను?"
+        English: "Hey! I'm GramaBot, your AI assistant for government services. How can I help you today?",
+        Hindi: "हे! मैं ग्रामाबॉट हूँ, सरकारी सेवाओं के लिए आपका AI सहायक। आज मैं आपकी कैसे सहायता कर सकता हूँ?",
+        Telugu: "హే! నేను గ్రామాబాట్, ప్రభుత్వ సేవల కోసం మీ AI సహాయకుడను। ఈరోజు నేను మీకు ఎలా సహాయం చేయగలను?"
       };
       greetingText = greetings[currentLanguage as keyof typeof greetings];
     }
@@ -130,12 +116,16 @@ const EnhancedChatDemo = () => {
     };
     setMessages([greeting]);
 
-    // Clear service context after using it
+    // Speak the greeting if speech is enabled
+    if (speechEnabled) {
+      speakText(greetingText);
+    }
+
     if (serviceContext) {
       localStorage.removeItem('chatbot-context');
       localStorage.removeItem('chatbot-service');
     }
-  }, [currentLanguage]);
+  }, [currentLanguage, speechEnabled]);
 
   useEffect(() => {
     scrollToBottom();
@@ -143,6 +133,46 @@ const EnhancedChatDemo = () => {
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  const getRelevantResponse = (query: string): string => {
+    const lowerQuery = query.toLowerCase();
+    
+    // Check each service for pattern matches
+    for (const [serviceKey, service] of Object.entries(serviceResponses)) {
+      const langService = service[currentLanguage as keyof typeof service];
+      if (langService && langService.patterns) {
+        for (const pattern of langService.patterns) {
+          if (lowerQuery.includes(pattern.toLowerCase())) {
+            const randomIndex = Math.floor(Math.random() * langService.responses.length);
+            return langService.responses[randomIndex];
+          }
+        }
+      }
+    }
+
+    // Default responses if no pattern matches
+    const defaultResponses = {
+      English: [
+        "Thank you for your question. Let me help you with that government service information.",
+        "I understand you need assistance with government services. Could you please be more specific about what you need?",
+        "I'm here to help with various government services like pension, ration card, health schemes, and more. What specifically can I assist you with?"
+      ],
+      Hindi: [
+        "आपके प्रश्न के लिए धन्यवाद। मैं उस सरकारी सेवा की जानकारी के साथ आपकी सहायता करता हूँ।",
+        "मैं समझता हूँ कि आपको सरकारी सेवाओं में सहायता चाहिए। कृपया बताएं कि आपको क्या चाहिए?",
+        "मैं पेंशन, राशन कार्ड, स्वास्थ्य योजनाओं और अन्य सरकारी सेवाओं में सहायता के लिए यहाँ हूँ।"
+      ],
+      Telugu: [
+        "మీ ప్రశ్నకు ధన్యవాదాలు. ఆ ప్రభుత్వ సేవా సమాచారంతో నేను మీకు సహాయం చేస్తాను.",
+        "మీకు ప్రభుత్వ సేవలలో సహాయం అవసరమని నేను అర్థం చేసుకున్నాను. దయచేసి మీకు ఏమి అవసరమో తెలియజేయండి?",
+        "నేను పెన్షన్, రేషన్ కార్డ్, ఆరోగ్య పథకాలు మరియు ఇతర ప్రభుత్వ సేవలలో సహాయం కోసం ఇక్కడ ఉన్నాను।"
+      ]
+    };
+    
+    const responses = defaultResponses[currentLanguage as keyof typeof defaultResponses];
+    const randomIndex = Math.floor(Math.random() * responses.length);
+    return responses[randomIndex];
   };
 
   const handleSendMessage = (query?: string, response?: string) => {
@@ -161,16 +191,7 @@ const EnhancedChatDemo = () => {
     setIsTyping(true);
 
     setTimeout(() => {
-      let botResponse = response;
-      
-      if (!botResponse) {
-        const greetings = {
-          English: "Thank you for your question. Let me help you with that government service information.",
-          Hindi: "आपके प्रश्न के लिए धन्यवाद। मैं उस सरकारी सेवा की जानकारी के साथ आपकी सहायता करता हूँ।",
-          Telugu: "మీ ప్రశ్నకు ధన్యవాదాలు. ఆ ప్రభుత్వ సేవా సమాచారంతో నేను మీకు సహాయం చేస్తాను।"
-        };
-        botResponse = greetings[currentLanguage as keyof typeof greetings];
-      }
+      const botResponse = response || getRelevantResponse(messageText);
       
       const botMessage: Message = {
         id: `bot-${Date.now()}`,
@@ -182,44 +203,99 @@ const EnhancedChatDemo = () => {
       setMessages(prev => [...prev, botMessage]);
       setIsTyping(false);
       
-      if (isSpeaking) {
+      if (speechEnabled) {
         speakText(botResponse);
       }
     }, 2000);
   };
 
   const startListening = () => {
-    if ('webkitSpeechRecognition' in window) {
-      const recognition = new (window as any).webkitSpeechRecognition();
-      recognition.lang = currentLanguage === 'Hindi' ? 'hi-IN' : currentLanguage === 'Telugu' ? 'te-IN' : 'en-US';
+    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+      const SpeechRecognition = (window as any).webkitSpeechRecognition || (window as any).SpeechRecognition;
+      const recognition = new SpeechRecognition();
+      
+      // Set language based on current selection
+      const languageCodes = {
+        English: 'en-US',
+        Hindi: 'hi-IN',
+        Telugu: 'te-IN'
+      };
+      
+      recognition.lang = languageCodes[currentLanguage as keyof typeof languageCodes];
       recognition.continuous = false;
       recognition.interimResults = false;
+      recognition.maxAlternatives = 1;
       
-      recognition.onstart = () => setIsListening(true);
+      recognition.onstart = () => {
+        setIsListening(true);
+        console.log(`Speech recognition started in ${currentLanguage}`);
+      };
+      
       recognition.onresult = (event: any) => {
         const transcript = event.results[0][0].transcript;
+        console.log('Speech recognized:', transcript);
         setInputText(transcript);
         setTimeout(() => {
           handleSendMessage(transcript);
         }, 500);
       };
-      recognition.onend = () => setIsListening(false);
+      
+      recognition.onend = () => {
+        setIsListening(false);
+        console.log('Speech recognition ended');
+      };
+      
       recognition.onerror = (event: any) => {
         console.error('Speech recognition error:', event.error);
         setIsListening(false);
       };
+      
+      recognitionRef.current = recognition;
       recognition.start();
+    } else {
+      console.error('Speech recognition not supported');
     }
   };
 
   const speakText = (text: string) => {
-    if ('speechSynthesis' in window) {
+    if ('speechSynthesis' in window && speechEnabled) {
+      speechSynthesis.cancel(); // Cancel any ongoing speech
+      
       setIsSpeaking(true);
       const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = currentLanguage === 'Hindi' ? 'hi-IN' : currentLanguage === 'Telugu' ? 'te-IN' : 'en-US';
+      
+      // Set language and voice
+      const languageCodes = {
+        English: 'en-US',
+        Hindi: 'hi-IN',
+        Telugu: 'te-IN'
+      };
+      
+      utterance.lang = languageCodes[currentLanguage as keyof typeof languageCodes];
+      utterance.rate = 0.9;
+      utterance.pitch = 1;
+      utterance.volume = 0.8;
+      
       utterance.onend = () => setIsSpeaking(false);
+      utterance.onerror = () => setIsSpeaking(false);
+      
       speechSynthesis.speak(utterance);
     }
+  };
+
+  const predefinedQueries = {
+    English: [
+      { query: "Check pension status", response: serviceResponses['pension-inquiry']['English'].responses[0] },
+      { query: "Apply for ration card", response: serviceResponses['ration-card']['English'].responses[0] }
+    ],
+    Hindi: [
+      { query: "पेंशन की स्थिति जांचें", response: serviceResponses['pension-inquiry']['Hindi'].responses[0] },
+      { query: "राशन कार्ड के लिए आवेदन करें", response: serviceResponses['ration-card']['Hindi'].responses[0] }
+    ],
+    Telugu: [
+      { query: "పెన్షన్ స్థితిని తనిఖీ చేయండి", response: serviceResponses['pension-inquiry']['Telugu'].responses[0] },
+      { query: "రేషన్ కార్డ్ కోసం దరఖాస్తు చేయండి", response: serviceResponses['ration-card']['Telugu'].responses[0] }
+    ]
   };
 
   return (
@@ -237,6 +313,14 @@ const EnhancedChatDemo = () => {
                   <Badge variant="secondary" className="bg-white/20 text-white">
                     {currentLanguage}
                   </Badge>
+                  <Button
+                    size="sm"
+                    variant="secondary"
+                    onClick={() => setSpeechEnabled(!speechEnabled)}
+                    className={`${speechEnabled ? 'bg-green-500 text-white' : 'bg-gray-500 text-white'}`}
+                  >
+                    {speechEnabled ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
+                  </Button>
                   <Button
                     size="sm"
                     variant="secondary"
@@ -340,7 +424,12 @@ const EnhancedChatDemo = () => {
                   {isVoiceMode ? (
                     <Button 
                       size="icon" 
-                      onClick={isListening ? () => setIsListening(false) : startListening}
+                      onClick={isListening ? () => {
+                        if (recognitionRef.current) {
+                          recognitionRef.current.stop();
+                        }
+                        setIsListening(false);
+                      } : startListening}
                       className={`${
                         isListening 
                           ? 'bg-red-500 hover:bg-red-600 animate-pulse' 
@@ -365,6 +454,14 @@ const EnhancedChatDemo = () => {
                 <div className="text-center mt-4">
                   <p className={`text-sm ${isListening ? 'text-red-600 font-semibold' : 'text-gray-600 dark:text-gray-400'}`}>
                     {isListening ? `🎤 Listening in ${currentLanguage}... Speak now!` : `🎤 Voice mode activated - Click microphone to speak in ${currentLanguage}`}
+                  </p>
+                </div>
+              )}
+
+              {speechEnabled && (
+                <div className="text-center mt-2">
+                  <p className="text-xs text-gray-500 dark:text-gray-400">
+                    {isSpeaking ? '🔊 Speaking...' : '🔊 Speech responses enabled'}
                   </p>
                 </div>
               )}
