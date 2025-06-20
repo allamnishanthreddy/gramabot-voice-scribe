@@ -1,17 +1,20 @@
+
 import { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { FileText, CreditCard, Heart, Users, MapPin, GraduationCap, Search, CheckCircle, Clock, AlertCircle } from "lucide-react";
+import { useLanguage } from "./LanguageProvider";
 
 interface ServicesPortalProps {
-  onStartChat?: () => void;
+  onStartChat?: (serviceType?: string) => void;
 }
 
 const ServicesPortal = ({ onStartChat }: ServicesPortalProps) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
+  const { t } = useLanguage();
 
   const services = [
     {
@@ -22,17 +25,19 @@ const ServicesPortal = ({ onStartChat }: ServicesPortalProps) => {
       icon: CreditCard,
       status: "active",
       languages: ["Hindi", "Telugu", "English"],
-      avgResponseTime: "2 minutes"
+      avgResponseTime: "2 minutes",
+      chatContext: "pension-inquiry"
     },
     {
       id: 2,
       name: "Ration Card Application",
-      description: "Apply for a new ration card or update existing details",
+      description: "Apply for new ration card or update existing information",
       category: "welfare",
       icon: FileText,
       status: "active",
-      languages: ["Hindi", "English"],
-      avgResponseTime: "5 minutes"
+      languages: ["Hindi", "Telugu", "English"],
+      avgResponseTime: "5 minutes",
+      chatContext: "ration-card"
     },
     {
       id: 3,
@@ -40,39 +45,43 @@ const ServicesPortal = ({ onStartChat }: ServicesPortalProps) => {
       description: "Register for government health insurance schemes",
       category: "health",
       icon: Heart,
-      status: "beta",
-      languages: ["Telugu", "English"],
-      avgResponseTime: "3 minutes"
+      status: "active",
+      languages: ["Hindi", "Telugu", "English"],
+      avgResponseTime: "3 minutes",
+      chatContext: "health-scheme"
     },
     {
       id: 4,
       name: "Land Records Verification",
-      description: "Verify your land records and ownership details online",
+      description: "Verify land ownership and property documents",
       category: "land",
       icon: MapPin,
-      status: "active",
-      languages: ["Hindi", "English"],
-      avgResponseTime: "7 minutes"
+      status: "beta",
+      languages: ["Hindi", "Telugu", "English"],
+      avgResponseTime: "10 minutes",
+      chatContext: "land-records"
     },
     {
       id: 5,
-      name: "Scholarship Application",
-      description: "Apply for educational scholarships offered by the government",
+      name: "Scholarship Applications",
+      description: "Apply for educational scholarships and track status",
       category: "education",
       icon: GraduationCap,
       status: "active",
-      languages: ["English"],
-      avgResponseTime: "4 minutes"
+      languages: ["Hindi", "English"],
+      avgResponseTime: "7 minutes",
+      chatContext: "scholarship"
     },
     {
       id: 6,
-      name: "Grievance Redressal",
-      description: "File complaints and track their resolution status",
+      name: "Complaint Filing",
+      description: "File complaints against government services",
       category: "grievance",
       icon: AlertCircle,
-      status: "maintenance",
-      languages: ["Hindi", "English"],
-      avgResponseTime: "Unavailable"
+      status: "active",
+      languages: ["Hindi", "Telugu", "English"],
+      avgResponseTime: "1 minute",
+      chatContext: "complaint"
     }
   ];
 
@@ -111,14 +120,21 @@ const ServicesPortal = ({ onStartChat }: ServicesPortalProps) => {
     }
   };
 
+  const handleStartChat = (service: any) => {
+    // Store the service context for the chatbot
+    localStorage.setItem('chatbot-context', service.chatContext);
+    localStorage.setItem('chatbot-service', service.name);
+    onStartChat?.(service.chatContext);
+  };
+
   return (
     <div className="max-w-7xl mx-auto space-y-6">
       {/* Header */}
       <Card className="bg-gradient-to-r from-blue-600 to-purple-600 text-white border-0">
         <CardHeader>
-          <CardTitle className="text-3xl font-serif text-center">Government Services Portal</CardTitle>
+          <CardTitle className="text-3xl font-serif text-center">{t('services.title')}</CardTitle>
           <CardDescription className="text-blue-100 text-center text-lg">
-            Access all government services through GramaBot in your preferred language
+            {t('services.subtitle')}
           </CardDescription>
         </CardHeader>
       </Card>
@@ -130,7 +146,7 @@ const ServicesPortal = ({ onStartChat }: ServicesPortalProps) => {
             <div className="flex-1 relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
               <Input
-                placeholder="Search services..."
+                placeholder={t('common.search')}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="pl-10"
@@ -196,9 +212,9 @@ const ServicesPortal = ({ onStartChat }: ServicesPortalProps) => {
                   <Button 
                     size="sm" 
                     className="bg-gradient-to-r from-orange-500 to-green-500 hover:from-orange-600 hover:to-green-600"
-                    onClick={onStartChat}
+                    onClick={() => handleStartChat(service)}
                   >
-                    Start Chat
+                    {t('services.startChat')}
                   </Button>
                 </div>
               </div>
@@ -207,23 +223,25 @@ const ServicesPortal = ({ onStartChat }: ServicesPortalProps) => {
         ))}
       </div>
 
-      {/* Stats */}
+      {/* Dynamic Stats */}
       <div className="grid md:grid-cols-4 gap-4">
         <Card className="text-center bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 border-green-200 dark:border-green-700">
           <CardContent className="pt-6">
-            <div className="text-2xl font-bold text-green-600 dark:text-green-400">6</div>
+            <div className="text-2xl font-bold text-green-600 dark:text-green-400">{services.filter(s => s.status === 'active').length}</div>
             <div className="text-sm text-green-700 dark:text-green-300">Active Services</div>
           </CardContent>
         </Card>
         <Card className="text-center bg-gradient-to-r from-blue-50 to-cyan-50 dark:from-blue-900/20 dark:to-cyan-900/20 border-blue-200 dark:border-blue-700">
           <CardContent className="pt-6">
-            <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">5</div>
+            <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">3</div>
             <div className="text-sm text-blue-700 dark:text-blue-300">Languages Supported</div>
           </CardContent>
         </Card>
         <Card className="text-center bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 border-purple-200 dark:border-purple-700">
           <CardContent className="pt-6">
-            <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">4.2 min</div>
+            <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">
+              {Math.round(services.reduce((acc, s) => acc + parseInt(s.avgResponseTime), 0) / services.length)} min
+            </div>
             <div className="text-sm text-purple-700 dark:text-purple-300">Avg Response Time</div>
           </CardContent>
         </Card>
