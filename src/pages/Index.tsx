@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -12,6 +13,7 @@ import UserDashboard from "@/components/UserDashboard";
 import LocationServices from "@/components/LocationServices";
 import ThreeDBackground from "@/components/ThreeDBackground";
 import LoginModal from "@/components/LoginModal";
+import WhatsAppButton from "@/components/WhatsAppButton";
 import { ThemeProvider, useTheme } from "@/components/ThemeProvider";
 import { LanguageProvider, useLanguage } from "@/components/LanguageProvider";
 import { AuthProvider, useAuth } from "@/components/AuthProvider";
@@ -91,15 +93,16 @@ const MainContent = () => {
     return (
       <div className="min-h-screen relative">
         <ThreeDBackground />
-        <div className="container mx-auto relative z-10 p-4">
-          <div className="flex items-center justify-between mb-6">
-            <Button variant="outline" onClick={() => setActiveTab('home')}>
+        <div className="container mx-auto relative z-10 p-2 sm:p-4">
+          <div className="flex items-center justify-between mb-4 sm:mb-6">
+            <Button variant="outline" onClick={() => setActiveTab('home')} className="text-sm">
               ← {t('common.back')}
             </Button>
             <Badge variant="secondary">{t('nav.demo')}</Badge>
           </div>
           <EnhancedChatDemo />
         </div>
+        <WhatsAppButton />
       </div>
     );
   }
@@ -108,15 +111,16 @@ const MainContent = () => {
     return (
       <div className="min-h-screen relative">
         <ThreeDBackground />
-        <div className="container mx-auto relative z-10 p-4">
-          <div className="flex items-center justify-between mb-6">
-            <Button variant="outline" onClick={() => setActiveTab('home')}>
+        <div className="container mx-auto relative z-10 p-2 sm:p-4">
+          <div className="flex items-center justify-between mb-4 sm:mb-6">
+            <Button variant="outline" onClick={() => setActiveTab('home')} className="text-sm">
               ← {t('common.back')}
             </Button>
             <Badge variant="secondary">{t('nav.dashboard')}</Badge>
           </div>
           <UserDashboard />
         </div>
+        <WhatsAppButton />
       </div>
     );
   }
@@ -125,15 +129,16 @@ const MainContent = () => {
     return (
       <div className="min-h-screen relative">
         <ThreeDBackground />
-        <div className="container mx-auto relative z-10 p-4">
-          <div className="flex items-center justify-between mb-6">
-            <Button variant="outline" onClick={() => setActiveTab('home')}>
+        <div className="container mx-auto relative z-10 p-2 sm:p-4">
+          <div className="flex items-center justify-between mb-4 sm:mb-6">
+            <Button variant="outline" onClick={() => setActiveTab('home')} className="text-sm">
               ← {t('common.back')}
             </Button>
             <Badge variant="secondary">{t('nav.locations')}</Badge>
           </div>
           <LocationServices />
         </div>
+        <WhatsAppButton />
       </div>
     );
   }
@@ -142,15 +147,16 @@ const MainContent = () => {
     return (
       <div className="min-h-screen relative">
         <ThreeDBackground />
-        <div className="container mx-auto relative z-10 p-4">
-          <div className="flex items-center justify-between mb-6">
-            <Button variant="outline" onClick={() => setActiveTab('home')}>
+        <div className="container mx-auto relative z-10 p-2 sm:p-4">
+          <div className="flex items-center justify-between mb-4 sm:mb-6">
+            <Button variant="outline" onClick={() => setActiveTab('home')} className="text-sm">
               ← {t('common.back')}
             </Button>
             <Badge variant="secondary">{t('nav.services')}</Badge>
           </div>
           <ServicesPortal onStartChat={() => setActiveTab('demo')} />
         </div>
+        <WhatsAppButton />
       </div>
     );
   }
@@ -159,15 +165,16 @@ const MainContent = () => {
     return (
       <div className="min-h-screen relative">
         <ThreeDBackground />
-        <div className="container mx-auto relative z-10 p-4">
-          <div className="flex items-center justify-between mb-6">
-            <Button variant="outline" onClick={() => setActiveTab('home')}>
+        <div className="container mx-auto relative z-10 p-2 sm:p-4">
+          <div className="flex items-center justify-between mb-4 sm:mb-6">
+            <Button variant="outline" onClick={() => setActiveTab('home')} className="text-sm">
               ← {t('common.back')}
             </Button>
             <Badge variant="secondary">{t('nav.analytics')}</Badge>
           </div>
           <AdminDashboard />
         </div>
+        <WhatsAppButton />
       </div>
     );
   }
@@ -178,35 +185,36 @@ const MainContent = () => {
       
       {/* Enhanced Navigation with Theme, Language, and Auth */}
       <nav className="bg-white/90 dark:bg-gray-900/90 backdrop-blur-md shadow-lg border-b-2 border-orange-200 dark:border-gray-700 sticky top-0 z-50">
-        <div className="container mx-auto px-4 py-4">
+        <div className="container mx-auto px-2 sm:px-4 py-3 sm:py-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <div className="bg-gradient-to-r from-orange-500 to-green-500 p-2 rounded-full">
-                <MessageCircle className="h-6 w-6 text-white" />
+            <div className="flex items-center space-x-2 sm:space-x-3">
+              <div className="bg-gradient-to-r from-orange-500 to-green-500 p-1.5 sm:p-2 rounded-full">
+                <MessageCircle className="h-4 w-4 sm:h-6 sm:w-6 text-white" />
               </div>
-              <h1 className="text-2xl font-bold bg-gradient-to-r from-orange-600 to-green-600 bg-clip-text text-transparent font-serif">
+              <h1 className="text-lg sm:text-2xl font-bold bg-gradient-to-r from-orange-600 to-green-600 bg-clip-text text-transparent font-serif">
                 {t('hero.title')}
               </h1>
-              <Badge variant="secondary" className="bg-gradient-to-r from-blue-500 to-purple-500 text-white">
+              <Badge variant="secondary" className="bg-gradient-to-r from-blue-500 to-purple-500 text-white text-xs sm:text-sm">
                 {t('nav.demo')}
               </Badge>
             </div>
             
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-1 sm:space-x-2">
               {/* Theme Toggle */}
               <Button
                 variant="ghost"
                 size="icon"
                 onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+                className="p-1 sm:p-2"
               >
-                {theme === 'dark' ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+                {theme === 'dark' ? <Sun className="h-4 w-4 sm:h-5 sm:w-5" /> : <Moon className="h-4 w-4 sm:h-5 sm:w-5" />}
               </Button>
 
               {/* Language Selector */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="icon">
-                    <Languages className="h-5 w-5" />
+                  <Button variant="ghost" size="icon" className="p-1 sm:p-2">
+                    <Languages className="h-4 w-4 sm:h-5 sm:w-5" />
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent>
@@ -219,24 +227,30 @@ const MainContent = () => {
                   <DropdownMenuItem onClick={() => setLanguage('Telugu')}>
                     🇮🇳 తెలుగు
                   </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setLanguage('Tamil')}>
+                    🇮🇳 தமிழ்
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setLanguage('Kannada')}>
+                    🇮🇳 ಕನ್ನಡ
+                  </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
 
               {/* Navigation Links */}
-              <div className="hidden md:flex space-x-4">
-                <Button variant="ghost" onClick={() => setActiveTab('demo')} className="text-gray-700 dark:text-gray-300">
+              <div className="hidden md:flex space-x-2 lg:space-x-4">
+                <Button variant="ghost" onClick={() => setActiveTab('demo')} className="text-gray-700 dark:text-gray-300 text-sm">
                   {t('nav.demo')}
                 </Button>
-                <Button variant="ghost" onClick={() => setActiveTab('dashboard')} className="text-gray-700 dark:text-gray-300">
+                <Button variant="ghost" onClick={() => setActiveTab('dashboard')} className="text-gray-700 dark:text-gray-300 text-sm">
                   {t('nav.dashboard')}
                 </Button>
-                <Button variant="ghost" onClick={() => setActiveTab('locations')} className="text-gray-700 dark:text-gray-300">
+                <Button variant="ghost" onClick={() => setActiveTab('locations')} className="text-gray-700 dark:text-gray-300 text-sm">
                   {t('nav.locations')}
                 </Button>
-                <Button variant="ghost" onClick={() => setActiveTab('services')} className="text-gray-700 dark:text-gray-300">
+                <Button variant="ghost" onClick={() => setActiveTab('services')} className="text-gray-700 dark:text-gray-300 text-sm">
                   {t('nav.services')}
                 </Button>
-                <Button variant="ghost" onClick={() => setActiveTab('admin')} className="text-gray-700 dark:text-gray-300">
+                <Button variant="ghost" onClick={() => setActiveTab('admin')} className="text-gray-700 dark:text-gray-300 text-sm">
                   {t('nav.analytics')}
                 </Button>
               </div>
@@ -245,8 +259,8 @@ const MainContent = () => {
               {isAuthenticated ? (
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="icon">
-                      <User className="h-5 w-5" />
+                    <Button variant="ghost" size="icon" className="p-1 sm:p-2">
+                      <User className="h-4 w-4 sm:h-5 sm:w-5" />
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent>
@@ -254,13 +268,13 @@ const MainContent = () => {
                       {t('nav.profile')}: {user?.name}
                     </DropdownMenuItem>
                     <DropdownMenuItem onClick={logout}>
-                      <LogOut className="w-4 h-4 mr-2" />
+                      <LogOut className="w-3 h-3 sm:w-4 sm:h-4 mr-2" />
                       Logout
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
               ) : (
-                <Button onClick={() => setShowLoginModal(true)}>
+                <Button onClick={() => setShowLoginModal(true)} className="text-sm">
                   {t('nav.login')}
                 </Button>
               )}
@@ -269,21 +283,21 @@ const MainContent = () => {
         </div>
       </nav>
 
-      <div className="container mx-auto px-4 py-8 space-y-12 relative z-10">
+      <div className="container mx-auto px-2 sm:px-4 py-4 sm:py-8 space-y-8 sm:space-y-12 relative z-10">
         {/* Enhanced Hero Section with Animation */}
-        <div className="text-center space-y-6 py-12">
+        <div className="text-center space-y-4 sm:space-y-6 py-8 sm:py-12">
           <div className="animate-fade-in">
-            <h1 className="text-4xl sm:text-5xl lg:text-7xl font-bold bg-gradient-to-r from-orange-600 via-red-500 to-pink-500 bg-clip-text text-transparent mb-6 font-serif animate-pulse">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-bold bg-gradient-to-r from-orange-600 via-red-500 to-pink-500 bg-clip-text text-transparent mb-4 sm:mb-6 font-serif animate-pulse">
               {t('hero.title')}
             </h1>
-            <p className="text-lg sm:text-xl lg:text-2xl text-gray-800 dark:text-gray-200 mb-8 max-w-4xl mx-auto font-light leading-relaxed shadow-text">
+            <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-gray-800 dark:text-gray-200 mb-6 sm:mb-8 max-w-4xl mx-auto font-light leading-relaxed shadow-text">
               {t('hero.subtitle')}
             </p>
-            <div className="flex flex-col sm:flex-row justify-center gap-4 sm:gap-6">
+            <div className="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4 lg:gap-6">
               <Button 
                 size="lg" 
                 onClick={() => setActiveTab('demo')}
-                className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-semibold px-8 py-3 text-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all"
+                className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-semibold px-6 sm:px-8 py-2 sm:py-3 text-sm sm:text-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all"
               >
                 {t('hero.tryDemo')}
               </Button>
@@ -291,7 +305,7 @@ const MainContent = () => {
                 size="lg" 
                 variant="outline" 
                 onClick={() => setActiveTab('dashboard')}
-                className="border-2 border-green-500 text-green-600 dark:text-green-400 hover:bg-green-50 dark:hover:bg-green-900 font-semibold px-8 py-3 text-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all bg-white/80 dark:bg-gray-800/80"
+                className="border-2 border-green-500 text-green-600 dark:text-green-400 hover:bg-green-50 dark:hover:bg-green-900 font-semibold px-6 sm:px-8 py-2 sm:py-3 text-sm sm:text-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all bg-white/80 dark:bg-gray-800/80"
               >
                 {t('hero.dashboard')}
               </Button>
@@ -302,10 +316,10 @@ const MainContent = () => {
         {/* Problem Statement */}
         <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border-2 border-blue-200 dark:border-blue-700 shadow-xl animate-fade-in">
           <CardHeader>
-            <CardTitle className="text-2xl sm:text-3xl text-blue-800 dark:text-blue-300 font-serif">Problem Statement</CardTitle>
+            <CardTitle className="text-xl sm:text-2xl lg:text-3xl text-blue-800 dark:text-blue-300 font-serif">Problem Statement</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-blue-700 dark:text-blue-300 text-base sm:text-lg leading-relaxed">
+            <p className="text-blue-700 dark:text-blue-300 text-sm sm:text-base lg:text-lg leading-relaxed">
               In rural India, citizens struggle to access government services due to language barriers, 
               digital illiteracy, and complex processes. Most e-governance portals are not designed for 
               low-literacy users or regional language speakers, resulting in underutilization of essential 
@@ -415,18 +429,18 @@ const MainContent = () => {
 
         {/* Call to Action */}
         <Card className="bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-900/20 dark:to-purple-900/20 border-2 border-indigo-200 dark:border-indigo-700 shadow-xl text-center animate-fade-in">
-          <CardContent className="py-12">
-            <h2 className="text-2xl sm:text-3xl font-bold text-indigo-800 dark:text-indigo-300 mb-4 font-serif">
+          <CardContent className="py-8 sm:py-12">
+            <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-indigo-800 dark:text-indigo-300 mb-3 sm:mb-4 font-serif">
               Experience GramaBot 2.0 Today!
             </h2>
-            <p className="text-indigo-600 dark:text-indigo-400 mb-6 text-lg">
+            <p className="text-indigo-600 dark:text-indigo-400 mb-4 sm:mb-6 text-sm sm:text-lg">
               Discover the future of government service accessibility with enhanced AI, accessibility, and intelligence
             </p>
-            <div className="flex flex-col sm:flex-row justify-center gap-4">
+            <div className="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4">
               <Button 
                 size="lg" 
                 onClick={() => setActiveTab('demo')}
-                className="bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white font-semibold px-8 py-3"
+                className="bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white font-semibold px-6 sm:px-8 py-2 sm:py-3 text-sm sm:text-base"
               >
                 {t('hero.tryDemo')}
               </Button>
@@ -434,7 +448,7 @@ const MainContent = () => {
                 size="lg" 
                 variant="outline" 
                 onClick={() => setActiveTab('dashboard')}
-                className="border-2 border-indigo-500 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900"
+                className="border-2 border-indigo-500 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900 text-sm sm:text-base"
               >
                 {t('hero.dashboard')}
               </Button>
@@ -442,7 +456,7 @@ const MainContent = () => {
                 size="lg" 
                 variant="outline" 
                 onClick={() => setActiveTab('locations')}
-                className="border-2 border-green-500 text-green-600 dark:text-green-400 hover:bg-green-50 dark:hover:bg-green-900"
+                className="border-2 border-green-500 text-green-600 dark:text-green-400 hover:bg-green-50 dark:hover:bg-green-900 text-sm sm:text-base"
               >
                 {t('hero.findLocations')}
               </Button>
@@ -457,6 +471,9 @@ const MainContent = () => {
         onClose={() => setShowLoginModal(false)}
         onAuthSuccess={handleAuthSuccess}
       />
+
+      {/* WhatsApp Button */}
+      <WhatsAppButton />
     </div>
   );
 };

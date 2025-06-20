@@ -24,7 +24,7 @@ const ServicesPortal = ({ onStartChat }: ServicesPortalProps) => {
       category: "pension",
       icon: CreditCard,
       status: "active",
-      languages: ["Hindi", "Telugu", "English"],
+      languages: ["Hindi", "Telugu", "English", "Tamil", "Kannada"],
       avgResponseTime: "2 minutes",
       chatContext: "pension-inquiry"
     },
@@ -35,7 +35,7 @@ const ServicesPortal = ({ onStartChat }: ServicesPortalProps) => {
       category: "welfare",
       icon: FileText,
       status: "active",
-      languages: ["Hindi", "Telugu", "English"],
+      languages: ["Hindi", "Telugu", "English", "Tamil", "Kannada"],
       avgResponseTime: "5 minutes",
       chatContext: "ration-card"
     },
@@ -46,7 +46,7 @@ const ServicesPortal = ({ onStartChat }: ServicesPortalProps) => {
       category: "health",
       icon: Heart,
       status: "active",
-      languages: ["Hindi", "Telugu", "English"],
+      languages: ["Hindi", "Telugu", "English", "Tamil", "Kannada"],
       avgResponseTime: "3 minutes",
       chatContext: "health-scheme"
     },
@@ -56,8 +56,8 @@ const ServicesPortal = ({ onStartChat }: ServicesPortalProps) => {
       description: "Verify land ownership and property documents",
       category: "land",
       icon: MapPin,
-      status: "beta",
-      languages: ["Hindi", "Telugu", "English"],
+      status: "active",
+      languages: ["Hindi", "Telugu", "English", "Tamil", "Kannada"],
       avgResponseTime: "10 minutes",
       chatContext: "land-records"
     },
@@ -68,7 +68,7 @@ const ServicesPortal = ({ onStartChat }: ServicesPortalProps) => {
       category: "education",
       icon: GraduationCap,
       status: "active",
-      languages: ["Hindi", "English"],
+      languages: ["Hindi", "English", "Tamil", "Kannada"],
       avgResponseTime: "7 minutes",
       chatContext: "scholarship"
     },
@@ -79,7 +79,7 @@ const ServicesPortal = ({ onStartChat }: ServicesPortalProps) => {
       category: "grievance",
       icon: AlertCircle,
       status: "active",
-      languages: ["Hindi", "Telugu", "English"],
+      languages: ["Hindi", "Telugu", "English", "Tamil", "Kannada"],
       avgResponseTime: "1 minute",
       chatContext: "complaint"
     }
@@ -137,8 +137,8 @@ const ServicesPortal = ({ onStartChat }: ServicesPortalProps) => {
       {/* Header */}
       <Card className="bg-gradient-to-r from-blue-600 to-purple-600 text-white border-0">
         <CardHeader>
-          <CardTitle className="text-3xl font-serif text-center">{t('services.title')}</CardTitle>
-          <CardDescription className="text-blue-100 text-center text-lg">
+          <CardTitle className="text-2xl sm:text-3xl font-serif text-center">{t('services.title')}</CardTitle>
+          <CardDescription className="text-blue-100 text-center text-base sm:text-lg">
             {t('services.subtitle')}
           </CardDescription>
         </CardHeader>
@@ -178,13 +178,13 @@ const ServicesPortal = ({ onStartChat }: ServicesPortalProps) => {
       </Card>
 
       {/* Services Grid */}
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
         {filteredServices.map(service => (
           <Card key={service.id} className="hover:shadow-xl transition-all transform hover:scale-105 bg-white dark:bg-gray-800 border-2 hover:border-blue-300 dark:hover:border-blue-600">
             <CardHeader>
               <div className="flex items-center justify-between mb-2">
-                <div className="bg-gradient-to-r from-blue-500 to-purple-500 p-3 rounded-full">
-                  <service.icon className="h-6 w-6 text-white" />
+                <div className="bg-gradient-to-r from-blue-500 to-purple-500 p-2 sm:p-3 rounded-full">
+                  <service.icon className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
                 </div>
                 <div className="flex items-center space-x-1">
                   <div className={`w-2 h-2 rounded-full ${getStatusColor(service.status)}`}></div>
@@ -194,8 +194,8 @@ const ServicesPortal = ({ onStartChat }: ServicesPortalProps) => {
                   </Badge>
                 </div>
               </div>
-              <CardTitle className="text-lg text-gray-800 dark:text-gray-200">{service.name}</CardTitle>
-              <CardDescription className="text-sm text-gray-600 dark:text-gray-400">{service.description}</CardDescription>
+              <CardTitle className="text-base sm:text-lg text-gray-800 dark:text-gray-200">{service.name}</CardTitle>
+              <CardDescription className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">{service.description}</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
@@ -212,11 +212,11 @@ const ServicesPortal = ({ onStartChat }: ServicesPortalProps) => {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-xs text-gray-600 dark:text-gray-400">Avg Response Time</p>
-                    <p className="text-sm font-medium text-gray-800 dark:text-gray-200">{service.avgResponseTime}</p>
+                    <p className="text-xs sm:text-sm font-medium text-gray-800 dark:text-gray-200">{service.avgResponseTime}</p>
                   </div>
                   <Button 
                     size="sm" 
-                    className="bg-gradient-to-r from-orange-500 to-green-500 hover:from-orange-600 hover:to-green-600"
+                    className="bg-gradient-to-r from-orange-500 to-green-500 hover:from-orange-600 hover:to-green-600 text-xs sm:text-sm"
                     onClick={() => handleStartChat(service)}
                   >
                     {t('services.startChat')}
@@ -229,31 +229,31 @@ const ServicesPortal = ({ onStartChat }: ServicesPortalProps) => {
       </div>
 
       {/* Dynamic Stats */}
-      <div className="grid md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
         <Card className="text-center bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 border-green-200 dark:border-green-700">
-          <CardContent className="pt-6">
-            <div className="text-2xl font-bold text-green-600 dark:text-green-400">{services.filter(s => s.status === 'active').length}</div>
-            <div className="text-sm text-green-700 dark:text-green-300">Active Services</div>
+          <CardContent className="pt-4 sm:pt-6">
+            <div className="text-xl sm:text-2xl font-bold text-green-600 dark:text-green-400">{services.filter(s => s.status === 'active').length}</div>
+            <div className="text-xs sm:text-sm text-green-700 dark:text-green-300">Active Services</div>
           </CardContent>
         </Card>
         <Card className="text-center bg-gradient-to-r from-blue-50 to-cyan-50 dark:from-blue-900/20 dark:to-cyan-900/20 border-blue-200 dark:border-blue-700">
-          <CardContent className="pt-6">
-            <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">3</div>
-            <div className="text-sm text-blue-700 dark:text-blue-300">Languages Supported</div>
+          <CardContent className="pt-4 sm:pt-6">
+            <div className="text-xl sm:text-2xl font-bold text-blue-600 dark:text-blue-400">5</div>
+            <div className="text-xs sm:text-sm text-blue-700 dark:text-blue-300">Languages Supported</div>
           </CardContent>
         </Card>
         <Card className="text-center bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 border-purple-200 dark:border-purple-700">
-          <CardContent className="pt-6">
-            <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">
+          <CardContent className="pt-4 sm:pt-6">
+            <div className="text-xl sm:text-2xl font-bold text-purple-600 dark:text-purple-400">
               {Math.round(services.reduce((acc, s) => acc + parseInt(s.avgResponseTime), 0) / services.length)} min
             </div>
-            <div className="text-sm text-purple-700 dark:text-purple-300">Avg Response Time</div>
+            <div className="text-xs sm:text-sm text-purple-700 dark:text-purple-300">Avg Response Time</div>
           </CardContent>
         </Card>
         <Card className="text-center bg-gradient-to-r from-orange-50 to-red-50 dark:from-orange-900/20 dark:to-red-900/20 border-orange-200 dark:border-orange-700">
-          <CardContent className="pt-6">
-            <div className="text-2xl font-bold text-orange-600 dark:text-orange-400">98.5%</div>
-            <div className="text-sm text-orange-700 dark:text-orange-300">Service Uptime</div>
+          <CardContent className="pt-4 sm:pt-6">
+            <div className="text-xl sm:text-2xl font-bold text-orange-600 dark:text-orange-400">98.5%</div>
+            <div className="text-xs sm:text-sm text-orange-700 dark:text-orange-300">Service Uptime</div>
           </CardContent>
         </Card>
       </div>
