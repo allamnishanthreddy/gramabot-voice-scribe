@@ -114,8 +114,7 @@ const ThreeDBackground = () => {
         if (particle.type === 'code') {
           // Draw code symbols
           ctx.fillStyle = particle.color;
-          ctx.font = `${size * 2}px 'Courier New', monospace`;
-          ctx.fontWeight = 'bold';
+          ctx.font = `bold ${size * 2}px 'Courier New', monospace`;
           ctx.textAlign = 'center';
           ctx.fillText(particle.symbol, particle.x, particle.y);
         } else if (particle.symbol.length === 1 && /[\u{1F300}-\u{1F9FF}]/u.test(particle.symbol)) {
@@ -126,8 +125,7 @@ const ThreeDBackground = () => {
         } else {
           // Draw text symbols
           ctx.fillStyle = particle.color;
-          ctx.font = `${size * 1.2}px Arial, sans-serif`;
-          ctx.fontWeight = 'bold';
+          ctx.font = `bold ${size * 1.2}px Arial, sans-serif`;
           ctx.textAlign = 'center';
           ctx.fillText(particle.symbol, particle.x, particle.y);
         }
@@ -164,8 +162,7 @@ const ThreeDBackground = () => {
         const y = canvas.height * 0.5 + Math.sin(time + index * 0.5) * 30;
         
         ctx.globalAlpha = 0.2;
-        ctx.font = '1.2rem "Inter", sans-serif';
-        ctx.fontWeight = 'bold';
+        ctx.font = 'bold 1.2rem "Inter", sans-serif';
         ctx.fillStyle = theme === 'dark' ? '#e5e7eb' : '#374151';
         ctx.textAlign = 'center';
         ctx.fillText(term, x, y);
