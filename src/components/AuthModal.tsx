@@ -14,9 +14,10 @@ interface AuthModalProps {
   open: boolean;
   onClose: () => void;
   defaultTab?: 'login' | 'register';
+  onAuthSuccess?: () => void;
 }
 
-const AuthModal = ({ open, onClose, defaultTab = 'login' }: AuthModalProps) => {
+const AuthModal = ({ open, onClose, defaultTab = 'login', onAuthSuccess }: AuthModalProps) => {
   const [activeTab, setActiveTab] = useState(defaultTab);
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -51,6 +52,13 @@ const AuthModal = ({ open, onClose, defaultTab = 'login' }: AuthModalProps) => {
     onClose();
   };
 
+  const handleAuthSuccess = () => {
+    handleClose();
+    if (onAuthSuccess) {
+      onAuthSuccess();
+    }
+  };
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -58,8 +66,8 @@ const AuthModal = ({ open, onClose, defaultTab = 'login' }: AuthModalProps) => {
     try {
       const result = await login(loginEmail, loginPassword);
       if (result.success) {
-        toast.success("Login successful!");
-        handleClose();
+        toast.success("Login successful! Welcome to GramaBot!");
+        handleAuthSuccess();
       } else {
         toast.error(result.error || "Login failed");
       }
@@ -84,8 +92,8 @@ const AuthModal = ({ open, onClose, defaultTab = 'login' }: AuthModalProps) => {
     try {
       const result = await register(registerName, registerEmail, registerPassword);
       if (result.success) {
-        toast.success("Registration successful! You are now logged in.");
-        handleClose();
+        toast.success("Registration successful! Welcome to GramaBot!");
+        handleAuthSuccess();
       } else {
         toast.error(result.error || "Registration failed");
       }
@@ -103,8 +111,8 @@ const AuthModal = ({ open, onClose, defaultTab = 'login' }: AuthModalProps) => {
     try {
       const result = await loginWithGoogle();
       if (result.success) {
-        toast.success("Google login successful!");
-        handleClose();
+        toast.success("Google login successful! Welcome to GramaBot!");
+        handleAuthSuccess();
       } else {
         toast.error(result.error || "Google login failed");
       }

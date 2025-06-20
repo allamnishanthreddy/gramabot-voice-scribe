@@ -82,6 +82,11 @@ const MainContent = () => {
     { category: "Backend", items: ["Node.js", "Express", "PostgreSQL", "Redis"] }
   ];
 
+  const handleAuthSuccess = () => {
+    setActiveTab('home');
+    setShowLoginModal(false);
+  };
+
   if (activeTab === 'demo') {
     return (
       <div className="min-h-screen relative">
@@ -445,6 +450,13 @@ const MainContent = () => {
           </CardContent>
         </Card>
       </div>
+
+      {/* Login Modal */}
+      <LoginModal 
+        open={showLoginModal} 
+        onClose={() => setShowLoginModal(false)}
+        onAuthSuccess={handleAuthSuccess}
+      />
     </div>
   );
 };
