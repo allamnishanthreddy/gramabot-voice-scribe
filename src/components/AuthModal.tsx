@@ -62,6 +62,7 @@ const AuthModal = ({ open, onClose, defaultTab = 'login' }: AuthModalProps) => {
       if (result.success) {
         toast.success("Login successful!");
         handleClose();
+        navigate('/'); // Redirect to landing page after successful login
       } else {
         toast.error(result.error || "Login failed");
       }
@@ -108,6 +109,7 @@ const AuthModal = ({ open, onClose, defaultTab = 'login' }: AuthModalProps) => {
       if (result.success) {
         toast.success("Google login successful!");
         handleClose();
+        navigate('/'); // Redirect to landing page after successful Google login
       } else {
         toast.error(result.error || "Google login failed");
       }
