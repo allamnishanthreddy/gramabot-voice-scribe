@@ -58,8 +58,8 @@ const ThreeDBackground = () => {
         vz: (Math.random() - 0.5) * 1.5,
         size: Math.random() * 6 + 3,
         color: theme === 'dark' 
-          ? ['#60a5fa', '#34d399', '#f59e0b', '#fb923c', '#a855f7'][Math.floor(Math.random() * 5)]
-          : ['#2563eb', '#059669', '#d97706', '#ea580c', '#7c3aed'][Math.floor(Math.random() * 5)],
+          ? ['#60a5fa', '#34d399', '#f59e0b', '#ef4444', '#a855f7'][Math.floor(Math.random() * 5)]
+          : ['#2563eb', '#059669', '#d97706', '#dc2626', '#7c3aed'][Math.floor(Math.random() * 5)],
         type,
         symbol: symbolArray[Math.floor(Math.random() * symbolArray.length)]
       });
